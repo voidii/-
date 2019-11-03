@@ -92,45 +92,80 @@ def run_train_test(training_input, testing_input):
     # A类的计算
     A_TP = 0
     A_FN = 0
-    for y in range(1, test_number_A+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
-        # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
-        if (result_1 < 0) & (result_2 > 0):
-            A_TP = A_TP + 1
-        else:
-            A_FN = A_FN + 1
-
-    # B类的计算
+    A_FP = 0
+    A_TN = 0
     B_TP = 0
     B_FN = 0
-    for y in range(test_number_A + 1, test_number_B + test_number_A+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
-        # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
-        if (result_2 < 0) & (result_1 > 0):
-            B_TP = B_TP + 1
-        else:
-            B_FN = B_FN + 1
-
-    # C类的计算
+    B_FP = 0
+    B_TN = 0
     C_TP = 0
     C_FN = 0
-    for y in range(test_number_B + test_number_A + 1, test_number_B + test_number_A + test_number_C+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
+    C_FP = 0
+    C_TN = 0
+    for y in range(1, test_number_A + 1):  # y是数量
+        result_AorB = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
         # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
-        if (result_1 < 0) & (result_2 > 0):
-            C_TP = C_TP + 1
-        else:
-            C_FN = C_FN + 1
+        result_CorA = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
+        result_BorC = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
+        if (result_AorB < 0) & (result_CorA > 0):  # 归到了A类
+            A_TP = A_TP + 1
+            B_TN = B_TN + 1
+            C_TN = C_TN + 1
+        elif (result_AorB > 0) & (result_BorC < 0):  # 归到了B类
+            A_FN = A_FN + 1
+            B_FP = B_FP + 1
+            C_TN = C_TN + 1
+        elif (result_BorC > 0) & (result_CorA < 0):  # 归到了C类
+            A_FN = A_FN + 1
+            C_FP = C_FP + 1
+            B_TN = B_TN + 1
 
-    print(A_TP)
-    print(A_FN)
-    print(B_TP)
-    print(B_FN)
-    print(C_TP)
-    print(C_FN)
+    # B类的计算
+
+    for y in range(test_number_A + 1, test_number_B + test_number_A + 1):  # y是数量
+        result_AorB = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
+        # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
+        result_CorA = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
+        result_BorC = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
+        if (result_AorB < 0) & (result_CorA > 0):  # 归到了A类
+            A_FP = A_FP + 1
+            B_FN = B_FN + 1
+            C_TN = C_TN + 1
+        elif (result_AorB > 0) & (result_BorC < 0):  # 归到了B类
+            B_TP = B_TP + 1
+            A_TN = A_TN + 1
+            C_TN = C_TN + 1
+        elif (result_BorC > 0) & (result_CorA < 0):  # 归到了C类
+            B_FN = B_FN + 1
+            C_FP = C_FP + 1
+            A_TN = A_TN + 1
+
+    # C类的计算
+
+    for y in range(test_number_B + test_number_A + 1, test_number_B + test_number_A + test_number_C + 1):  # y是数量
+        result_AorB = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
+        # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
+        result_CorA = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
+        result_BorC = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
+        if (result_AorB < 0) & (result_CorA > 0):  # 归到了A类
+            A_FP = A_FP + 1
+            C_FN = C_FN + 1
+            B_TN = B_TN + 1
+        elif (result_AorB > 0) & (result_BorC < 0):  # 归到了B类
+            B_FP = B_FP + 1
+            C_FN = C_FN + 1
+            A_TN = A_TN + 1
+        elif (result_BorC > 0) & (result_CorA < 0):  # 归到了C类
+            C_TP = C_TP + 1
+            B_TN = B_TN + 1
+            A_TN = A_TN + 1
+
+    TPR = (A_TP + B_TP + C_TP) / (test_number_B + test_number_A + test_number_C)
+    FPR = (A_FP + B_FP + C_FP) / ((test_number_B + test_number_A + test_number_C)*2)
+    err = (A_FP + B_FP + C_FP + A_FN + B_FN + C_FN) / ((test_number_C + test_number_B + test_number_A) * 3)
+    acc = (A_TP + B_TP + C_TP + A_TN + B_TN + C_TN) / ((test_number_C + test_number_B + test_number_A) * 3)
+    pre = TPR
+    print('error_rate:', err, 'accuracy:', acc, 'tpr:', TPR, 'precision:', pre, 'fpr:', FPR)
 
     # 测试数据导入完成
 
