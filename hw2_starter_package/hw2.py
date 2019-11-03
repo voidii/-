@@ -93,9 +93,9 @@ def run_train_test(training_input, testing_input):
     A_TP = 0
     A_FN = 0
     for y in range(1, test_number_A+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) - AB_eps
+        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
         # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) - CA_eps
+        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
         if (result_1 < 0) & (result_2 > 0):
             A_TP = A_TP + 1
         else:
@@ -105,9 +105,9 @@ def run_train_test(training_input, testing_input):
     B_TP = 0
     B_FN = 0
     for y in range(test_number_A + 1, test_number_B + test_number_A+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) - AB_eps
+        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(A_to_B))) + AB_eps
         # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) - BC_eps
+        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
         if (result_2 < 0) & (result_1 > 0):
             B_TP = B_TP + 1
         else:
@@ -117,9 +117,9 @@ def run_train_test(training_input, testing_input):
     C_TP = 0
     C_FN = 0
     for y in range(test_number_B + test_number_A + 1, test_number_B + test_number_A + test_number_C+1):  # y是数量
-        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) - CA_eps
+        result_1 = sum(np.multiply(np.array(testing_input[y]), np.array(C_to_A))) + CA_eps
         # 数据坐标和法向量相乘并减去常数项，如果点在平面上那么该result应该等于0
-        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) - BC_eps
+        result_2 = sum(np.multiply(np.array(testing_input[y]), np.array(B_to_C))) + BC_eps
         if (result_1 < 0) & (result_2 > 0):
             C_TP = C_TP + 1
         else:
